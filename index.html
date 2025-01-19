@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NERF ELITE 2.0</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <!-- Start Page -->
+    <section id="start-page" class="page hidden">
+      <div class="text text-offset text-s">
+        Choose your blaster then shoot as many<br />
+        targets as you can within the time limit!
+      </div>
+      <div class="container-buttons">
+        <button id="play-minigame" class="btn">PLAY MINIGAME</button>
+        <button id="watch-video" class="btn">WATCH VIDEO</button>
+        <button id="view-range" class="btn">VIEW RANGE</button>
+        <button id="visit-nerf" class="btn visit-nerf">VISIT NERF</button>
+      </div>
+      <img
+        src="textures/Labels/Label-main-logo-large.png"
+        alt="Logo-large"
+        class="img-full"
+      />
+      <img
+        src="textures/Blasters/Blasters-all.png"
+        alt="All Blasters"
+        class="img-full"
+      />
+    </section>
+
+    <!-- Game Intro Page -->
+    <section id="game-intro" class="page hidden">
+      <div class="text text-offset text-m">
+        Choose your blaster then shoot the targets!
+      </div>
+      <div class="carousel-select">
+        <button id="carousel-prev" class="btn-carousel carousel-prev"></button>
+        <div class="carousel-select-swipe">
+          <img
+            id="blaster-image-select"
+            src="textures/Blasters/Blaster-1-select-Volt.png"
+            alt="Blaster"
+            class="carousel-image"
+          />
+        </div>
+        <button id="carousel-next" class="btn-carousel carousel-next"></button>
+      </div>
+      <div class="container-buttons-label">
+        <button id="go-back-select" class="btn go-back">GO BACK</button>
+        <div id="blaster-name-select" class="field field-border text-xl">
+          VOLT SD-1
+        </div>
+        <button id="play-game" class="btn">PLAY GAME</button>
+      </div>
+      <img
+        src="textures/Labels/Label-main-logo-small.png"
+        alt="Logo-small"
+        class="img-full"
+      />
+    </section>
+
+    <!-- Info Page -->
+    <section id="info-page" class="page hidden">
+      <div class="text text-offset text-m">
+        Swipe left and right to view the range!
+      </div>
+      <div class="carousel-info">
+        <button
+          id="carousel-prev-info"
+          class="btn-carousel carousel-prev"
+        ></button>
+        <div class="carousel-info-swipe">
+          <img
+            id="blaster-image-info"
+            src="textures/Blasters/Blaster-1-info-Volt.png"
+            alt="Blaster"
+            class="carousel-image"
+          />
+        </div>
+        <div class="carousel-info-table">
+          <div id="blaster-name-info" class="field text-l">VOLT SD-1</div>
+          <img
+            id="blaster-info"
+            src="textures/Info/Blaster-1-descr-Volt.png"
+            alt="Blaster Info"
+            class="description"
+          />
+        </div>
+        <button
+          id="carousel-next-info"
+          class="btn-carousel carousel-next"
+        ></button>
+      </div>
+      <div class="container-buttons-label">
+        <button id="go-back-info" class="btn go-back">GO BACK</button>
+        <div></div>
+        <button id="visit-nerf-info" class="btn visit-nerf">VISIT NERF</button>
+      </div>
+      <img
+        src="textures/Labels/Label-main-logo-small.png"
+        alt="Logo-small"
+        class="img-full"
+      />
+    </section>
+
+    <!-- Game Page -->
+    <section id="game-page" class="page">
+      <div class="text text-offset-l text-m">
+        Tap the targets to shoot as many<br />
+        as you can within the time limit!
+      </div>
+      <div class="game-info">
+        <div class="time text-s">time: 20 sec</div>
+        <div class="score text-l">score:XX</div>
+      </div>
+      <img
+        src="textures/Labels/Label-main-logo-small.png"
+        alt="Logo-small"
+        class="img-full"
+      />
+    </section>
+
+    <script src="js/script.js"></script>
+  </body>
+</html>

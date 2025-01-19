@@ -1,0 +1,283 @@
+@font-face {
+  font-family: "Eurostile";
+  src: url("fonts/EurostileOblique.ttf") format("truetype");
+}
+
+@media (max-width: 768px) {
+  .page {
+    width: 100%;
+    height: 100%;
+  }
+  .btn {
+    font-size: 1.2rem;
+  }
+  .game-info {
+    width: 30%;
+  }
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: inherit;
+}
+
+html {
+  font-size: 14px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Eurostile";
+  font-size: 0.8rem;
+  font-weight: 100;
+  height: 100vh;
+  color: white;
+  background-color: rgba(15, 10, 10, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* LAYOUT */
+.page {
+  width: 800px;
+  height: 450px;
+  position: relative;
+  background-size: cover;
+  background-repeat: no-repeat;
+  backdrop-filter: blur(200px);
+  filter: blur();
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+#start-page {
+  background-image: url("../textures/Background/Background-main.png");
+}
+
+#game-intro {
+  background-image: url("../textures/Background/Background-select-with-beams.png");
+}
+
+#info-page {
+  background-image: url("../textures/Background/Background-info-with-beams.png");
+}
+
+#game-page {
+  background-image: url("../textures/Background/Background-main.png");
+}
+
+.hidden {
+  display: none;
+}
+
+/* ELEMENTS */
+.text {
+  position: absolute;
+  top: 8%;
+  white-space: nowrap;
+  text-align: left;
+  user-select: none;
+}
+
+.text-right {
+  right: 0;
+}
+
+.text-offset {
+  right: 3%;
+}
+
+.text-offset-s {
+  right: 5%;
+}
+
+.text-offset-l {
+  right: 25%;
+}
+
+.text-s {
+  font-size: 1rem;
+}
+
+.text-m {
+  font-size: 1.2rem;
+}
+
+.text-l {
+  font-size: 1.8rem;
+}
+
+.text-xl {
+  font-size: 2.5rem;
+}
+
+.container-buttons {
+  z-index: 1000;
+  padding-bottom: 3%;
+  width: 100%;
+  height: 34%;
+  display: grid;
+  grid-template-columns: 48.5% 48.5%;
+  grid-template-rows: repeat(2, 44%);
+  gap: 12% 3%;
+  text-align: center;
+}
+
+.container-buttons-label {
+  z-index: 1000;
+  padding-bottom: 4%;
+  width: 100%;
+  height: 20%;
+  display: grid;
+  grid-template-columns: 27% 40% 27%;
+  gap: 3%;
+  text-align: center;
+}
+
+.btn,
+.btn-carousel {
+  z-index: 2000;
+  font-size: 1.8rem;
+  font-style: italic;
+  font-family: "Eurostile";
+  color: #02132a;
+  height: 100%;
+  width: 100%;
+  background-color: #09d1e1;
+  border: none;
+  cursor: pointer;
+}
+
+.btn:hover,
+.btn-carousel:hover::before,
+.btn-carousel:hover::after {
+  background-color: #f47921;
+  color: white;
+}
+
+.field-border {
+  border: 2px solid #09d1e1;
+}
+
+.field {
+  white-space: nowrap;
+  user-select: none;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.img-full {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
+.carousel-select,
+.carousel-info {
+  width: 92%;
+  height: 50%;
+  margin-bottom: 4%;
+  margin-left: 4%;
+  margin-right: 4%;
+  display: grid;
+  place-items: center;
+  scroll-snap-type: x mandatory;
+  z-index: 1000;
+}
+
+.carousel-select {
+  grid-template-columns: 10% 55% 10%;
+  gap: 12.5%;
+}
+
+.carousel-info {
+  grid-template-columns: 10% 39% 32% 10%;
+  gap: 3%;
+}
+
+.btn-carousel {
+  width: 64px;
+  height: 64px;
+  background-color: transparent;
+  position: relative;
+}
+
+.btn-carousel::before,
+.btn-carousel::after {
+  content: "";
+  position: absolute;
+  width: 60%; /* Arrow length */
+  height: 12%; /* Arrow thickness */
+  background-color: #09d1e1;
+  transform-origin: left;
+}
+
+.carousel-prev::before {
+  top: 47%;
+  left: 20%;
+  transform: translate(0, -50%) rotate(45deg);
+}
+
+.carousel-prev::after {
+  top: 53%;
+  left: 20%;
+  transform: translate(0, -50%) rotate(-45deg);
+}
+
+.carousel-next::before {
+  top: 47%;
+  left: 80%;
+  transform: translate(0, -50%) rotate(135deg);
+}
+
+.carousel-next::after {
+  top: 53%;
+  left: 80%;
+  transform: translate(0, -50%) rotate(-135deg);
+}
+
+.carousel-info-table {
+  height: 100%;
+  display: grid;
+  grid-template-rows: 20% 78%;
+  gap: 2%;
+  justify-items: left;
+  color: #09d1e1;
+}
+
+.carousel-image {
+  z-index: 100;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  scroll-snap-align: center;
+}
+
+.carousel-select-swipe,
+.carousel-info-swipe {
+  overflow: hidden;
+}
+
+.game-info {
+  position: absolute;
+  top: 7%;
+  right: 3%;
+  height: 10%;
+  width: 20%;
+  color: #09d1e1;
+  white-space: nowrap;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
