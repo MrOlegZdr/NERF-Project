@@ -5,10 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>NERF ELITE 2.0</title>
     <link rel="stylesheet" href="css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
+    />
   </head>
   <body>
     <!-- Start Page -->
-    <section id="start-page" class="page hidden">
+    <section id="start-page" class="page">
       <div class="text text-offset text-s">
         Choose your blaster then shoot as many<br />
         targets as you can within the time limit!
@@ -20,15 +24,32 @@
         <button id="visit-nerf" class="btn visit-nerf">VISIT NERF</button>
       </div>
       <img
-        src="textures/Labels/Label-main-logo-large.png"
+        src="textures/Labels/Logo-large.png"
         alt="Logo-large"
-        class="img-full"
+        class="img-off-sc-l"
       />
       <img
         src="textures/Blasters/Blasters-all.png"
         alt="All Blasters"
         class="img-full"
       />
+      <div id="modal-video" class="modal-video">
+        <div class="video-container">
+          <video id="promo-watch" class="video-element">
+            <source src="promo/HSNF0100000H.mp4" type="video/mp4" />
+            Your browser does not support the video
+          </video>
+        </div>
+        <button
+          id="btn-close"
+          type="button"
+          class="btn-close"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">X</span>
+        </button>
+      </div>
+      <div id="overlay" class="overlay"></div>
     </section>
 
     <!-- Game Intro Page -->
@@ -36,15 +57,41 @@
       <div class="text text-offset text-m">
         Choose your blaster then shoot the targets!
       </div>
-      <div class="carousel-select">
+      <div class="carousel-select swiper">
         <button id="carousel-prev" class="btn-carousel carousel-prev"></button>
-        <div class="carousel-select-swipe">
-          <img
-            id="blaster-image-select"
-            src="textures/Blasters/Blaster-1-select-Volt.png"
-            alt="Blaster"
-            class="carousel-image"
-          />
+        <div class="carousel-select-swipe swiper-wrapper">
+          <div class="swiper-slide">
+            <img
+              id="blaster-image-select"
+              src="textures/Blasters/Blaster-1-select-Volt.png"
+              alt="Blaster"
+              class="carousel-image"
+            />
+          </div>
+          <div class="swiper-slide">
+            <img
+              id="blaster-image-select"
+              src="textures/Blasters/Blaster-2-select-Commander.png"
+              alt="Blaster"
+              class="carousel-image"
+            />
+          </div>
+          <div class="swiper-slide">
+            <img
+              id="blaster-image-select"
+              src="textures/Blasters/Blaster-3-select-Shockwave.png"
+              alt="Blaster"
+              class="carousel-image"
+            />
+          </div>
+          <div class="swiper-slide">
+            <img
+              id="blaster-image-select"
+              src="textures/Blasters/Blaster-4-select-Echo.png"
+              alt="Blaster"
+              class="carousel-image"
+            />
+          </div>
         </div>
         <button id="carousel-next" class="btn-carousel carousel-next"></button>
       </div>
@@ -56,9 +103,9 @@
         <button id="play-game" class="btn">PLAY GAME</button>
       </div>
       <img
-        src="textures/Labels/Label-main-logo-small.png"
+        src="textures/Labels/Logo-small.png"
         alt="Logo-small"
-        class="img-full"
+        class="img-off-sc-s"
       />
     </section>
 
@@ -67,18 +114,44 @@
       <div class="text text-offset text-m">
         Swipe left and right to view the range!
       </div>
-      <div class="carousel-info">
+      <div class="carousel-info swiper swiper-container">
         <button
           id="carousel-prev-info"
           class="btn-carousel carousel-prev"
         ></button>
-        <div class="carousel-info-swipe">
-          <img
-            id="blaster-image-info"
-            src="textures/Blasters/Blaster-1-info-Volt.png"
-            alt="Blaster"
-            class="carousel-image"
-          />
+        <div class="carousel-info-swipe swiper-wrapper">
+          <div class="swiper-slide">
+            <img
+              id="blaster-image-info"
+              src="textures/Blasters/Blaster-1-info-Volt.png"
+              alt="Blaster"
+              class="carousel-image"
+            />
+          </div>
+          <div class="swiper-slide">
+            <img
+              id="blaster-image-info"
+              src="textures/Blasters/Blaster-2-info-Commander.png"
+              alt="Blaster"
+              class="carousel-image"
+            />
+          </div>
+          <div class="swiper-slide">
+            <img
+              id="blaster-image-info"
+              src="textures/Blasters/Blaster-3-info-Shockwave.png"
+              alt="Blaster"
+              class="carousel-image"
+            />
+          </div>
+          <div class="swiper-slide">
+            <img
+              id="blaster-image-info"
+              src="textures/Blasters/Blaster-4-info-Echo.png"
+              alt="Blaster"
+              class="carousel-image"
+            />
+          </div>
         </div>
         <div class="carousel-info-table">
           <div id="blaster-name-info" class="field text-l">VOLT SD-1</div>
@@ -100,29 +173,63 @@
         <button id="visit-nerf-info" class="btn visit-nerf">VISIT NERF</button>
       </div>
       <img
-        src="textures/Labels/Label-main-logo-small.png"
+        src="textures/Labels/Logo-small.png"
         alt="Logo-small"
-        class="img-full"
+        class="img-off-sc-s"
       />
     </section>
 
     <!-- Game Page -->
-    <section id="game-page" class="page">
+    <section id="game-page" class="page hidden">
       <div class="text text-offset-l text-m">
         Tap the targets to shoot as many<br />
         as you can within the time limit!
       </div>
-      <div class="game-info">
-        <div class="time text-s">time: 20 sec</div>
-        <div class="score text-l">score:XX</div>
-      </div>
+      <audio id="sound-shot" src="/sounds/One-shot.mp3"></audio>
+      <audio id="sound-reload" src="/sounds/Reload-one-bullet.mp3"></audio>
+      <audio id="sound-hit" src="/sounds/Hit.mp3"></audio>
+      <audio id="sound-miss" src="/sounds/Miss.mp3"></audio>
       <img
-        src="textures/Labels/Label-main-logo-small.png"
+        src="textures/Labels/Logo-small.png"
         alt="Logo-small"
-        class="img-full"
+        class="img-off-sc-s"
       />
     </section>
 
-    <script src="js/script.js"></script>
+    <!-- Finish Game Page -->
+    <section id="finish-game" class="page hidden">
+      <div class="text text-offset-s text-m">
+        Awesome! Now check out the video
+      </div>
+      <img
+        src="textures/Labels/Logo-small.png"
+        alt="Logo-small"
+        class="img-off-sc-s"
+      />
+      <div class="container-buttons-label">
+        <button id="go-back-info" class="btn go-back">GO BACK</button>
+        <div></div>
+        <button id="visit-nerf-info" class="btn visit-nerf">VISIT NERF</button>
+      </div>
+      <div class="final-result">
+        <img
+          src="textures/Blasters/Blaster-1-select-Volt.png"
+          alt="Blaster-result"
+          class="img-cntr"
+        />
+        <div class="final-score text-m">
+          Your score:
+          <div id="final-score-val" class="text-xxl-col">9999</div>
+        </div>
+      </div>
+      <div class="video-container video-end">
+        <video id="promo-end" class="video-element">
+          <source src="promo/HSNF0100000H.mp4" type="video/mp4" />
+          Your browser does not support the video
+        </video>
+      </div>
+    </section>
+
+    <script type="module" src="js/script.js"></script>
   </body>
 </html>
