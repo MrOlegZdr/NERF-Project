@@ -57,9 +57,8 @@
       <div class="text text-offset text-m">
         Choose your blaster then shoot the targets!
       </div>
-      <div class="carousel-select swiper">
-        <button id="carousel-prev" class="btn-carousel carousel-prev"></button>
-        <div class="carousel-select-swipe swiper-wrapper">
+      <div class="swiper carousel-select">
+        <div class="swiper-wrapper carousel-select-swipe">
           <div class="swiper-slide">
             <img
               id="blaster-image-select"
@@ -93,11 +92,12 @@
             />
           </div>
         </div>
-        <button id="carousel-next" class="btn-carousel carousel-next"></button>
+        <button id="sw-prev" class="swiper-button-prev btn-carousel"></button>
+        <button id="sw-next" class="swiper-button-next btn-carousel"></button>
       </div>
       <div class="container-buttons-label">
         <button id="go-back-select" class="btn go-back">GO BACK</button>
-        <div id="blaster-name-select" class="field field-border text-xl">
+        <div id="blaster-name" class="field field-border text-xl">
           VOLT SD-1
         </div>
         <button id="play-game" class="btn">PLAY GAME</button>
@@ -114,12 +114,8 @@
       <div class="text text-offset text-m">
         Swipe left and right to view the range!
       </div>
-      <div class="carousel-info swiper swiper-container">
-        <button
-          id="carousel-prev-info"
-          class="btn-carousel carousel-prev"
-        ></button>
-        <div class="carousel-info-swipe swiper-wrapper">
+      <div class="swiper carousel-info">
+        <div class="swiper-wrapper carousel-info-swipe">
           <div class="swiper-slide">
             <img
               id="blaster-image-info"
@@ -153,19 +149,8 @@
             />
           </div>
         </div>
-        <div class="carousel-info-table">
-          <div id="blaster-name-info" class="field text-l">VOLT SD-1</div>
-          <img
-            id="blaster-info"
-            src="textures/Info/Blaster-1-descr-Volt.png"
-            alt="Blaster Info"
-            class="description"
-          />
-        </div>
-        <button
-          id="carousel-next-info"
-          class="btn-carousel carousel-next"
-        ></button>
+        <button id="sw-prev-i" class="swiper-button-prev btn-carousel"></button>
+        <button id="sw-next-i" class="swiper-button-next btn-carousel"></button>
       </div>
       <div class="container-buttons-label">
         <button id="go-back-info" class="btn go-back">GO BACK</button>

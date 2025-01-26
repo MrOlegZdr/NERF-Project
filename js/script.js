@@ -1,7 +1,5 @@
 "use strict";
 
-// Import Swiper.js
-// import Swiper from "https://unpkg.com/swiper/swiper-bundle.esm.browser.min.js";
 import Swiper from "https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.mjs";
 
 // Selecting elements for Start Page
@@ -9,6 +7,8 @@ const startPageSection = document.getElementById("start-page");
 const btnStartPagePlayM = document.getElementById("play-minigame");
 const btnStartPageWatch = document.getElementById("watch-video");
 const btnStartPageViewR = document.getElementById("view-range");
+
+// Selecting elements for Modal Watch Video
 const closeVideo = document.getElementById("btn-close");
 const overlay = document.getElementById("overlay");
 const modalVideo = document.getElementById("modal-video");
@@ -17,13 +17,10 @@ const promoWatch = document.getElementById("promo-watch");
 // Selecting elements for Game Intro Page
 const gameIntroSection = document.getElementById("game-intro");
 const btnPlayGame = document.getElementById("play-game");
-const blasterNameSelect = document.getElementById("blaster-name-select");
-// const carouselSelectSwipe = document.querySelector(".carousel-select-swipe");
+const blasterNameSelect = document.getElementById("blaster-name");
 
 // Selecting elements for View Range Page
 const viewRangeSection = document.getElementById("info-page");
-const blasterInfo = document.getElementById("blaster-info");
-// const carouselInfoSwipe = document.querySelector(".carousel-info-swipe");
 
 // Selecting elements for Main Game Page
 const mainGameSection = document.getElementById("game-page");
@@ -41,8 +38,9 @@ const promoEnd = document.getElementById("promo-end");
 const btnVisit = document.querySelectorAll(".visit-nerf");
 const btnGoBack = document.querySelectorAll(".go-back");
 const promoVideo = document.querySelectorAll(".video-element");
-const btnCarouselPrev = document.querySelectorAll(".carousel-prev");
-const btnCarouselNext = document.querySelectorAll(".carousel-next");
+
+const btnPrev = document.getElementById("sw-prev-i");
+const btnNext = document.getElementById("sw-next-i");
 
 // Constants
 // Blaster objects
@@ -52,77 +50,51 @@ const blasters = [
     images: {
       select: "textures/Blasters/Blaster-1-select-Volt.png",
       info: "textures/Blasters/Blaster-1-info-Volt.png",
-      descr: "textures/Info/Blaster-1-descr-Volt.png",
     },
+    rapidity: 1000, // in ms
+    reloadTime: 1000, // in ms
+    magazin: 1,
   },
   {
     blasterName: "Commander",
     images: {
       select: "textures/Blasters/Blaster-2-select-Commander.png",
       info: "textures/Blasters/Blaster-2-info-Commander.png",
-      descr: "textures/Info/Blaster-2-descr-Commander.png",
     },
+    rapidity: 500, // in ms
+    reloadTime: 3000, // in ms
+    magazin: 6,
   },
   {
     blasterName: "Shockwave",
     images: {
       select: "textures/Blasters/Blaster-3-select-Shockwave.png",
       info: "textures/Blasters/Blaster-3-info-Shockwave.png",
-      descr: "textures/Info/Blaster-3-descr-Shockwave.png",
     },
+    rapidity: 500, // in ms
+    reloadTime: 7500, // in ms
+    magazin: 15,
   },
   {
     blasterName: "Echo",
     images: {
       select: "textures/Blasters/Blaster-4-select-Echo.png",
       info: "textures/Blasters/Blaster-4-info-Echo.png",
-      descr: "textures/Info/Blaster-4-descr-Echo.png",
     },
+    rapidity: 500, // in ms
+    reloadTime: 5500, // in ms
+    magazin: 10,
   },
 ];
-// const POSITIVE_THRESHOLD = 20;
-// const NEGATIVE_THRESHOLD = -20;
 
-// const swiperIntro = new Swiper("#game-intro .carousel-select-swipe", {
-//   slidesPerView: 1,
-//   loop: true,
-//   navigation: {
-//     nextEl: "#game-intro .carousel-next",
-//     prevEl: "#game-intro .carousel-prev",
-//   },
-// });
-// swiperIntro.on("slideChange", () => {
-//   currentBlasterIndex = swiperIntro.realIndex;
-//   updateBlasterData("select");
-// });
-
-// const swiperInfo = new Swiper("#info-page .carousel-info-swipe", {
-//   slidesPerView: 1,
-//   loop: true,
-//   navigation: {
-//     nextEl: "#info-page .carousel-next",
-//     prevEl: "#info-page .carousel-prev",
-//   },
-// });
-
-// swiperInfo.on("slideChange", () => {
-//   currentBlasterIndex = swiperInfo.realIndex;
-//   updateBlasterData("info");
-// });
-
-// let currentBlasterIndex, currentPageLabel, touchStartX, touchEndX;
-let currentBlasterIndex;
+let swiper, currentBlasterIndex;
 init();
 
 // Function to set initial values
 function init() {
   currentBlasterIndex = 0;
-  // currentPageLabel = "select";
-  // touchStartX = 0;
-  // touchEndX = 0;
   blasterNameSelect.textContent = blasters[0].blasterName;
   togglePageVisibility(startPageSection);
-  initializeSwipers();
 }
 
 // Function to handle button clicks (for debugging)
@@ -147,148 +119,52 @@ function togglePageVisibility(visiblePage) {
 }
 
 // Function to update blaster info in specific page
-// function updateBlasterData() {
-//   const currentImg = document.getElementById(
-//     `blaster-image-${currentPageLabel}`
-//   );
-//   const currentName = document.getElementById(
-//     `blaster-name-${currentPageLabel}`
-//   );
-//   currentImg.src = blasters[currentBlasterIndex].images[`${currentPageLabel}`];
-//   currentName.textContent = blasters[currentBlasterIndex].blasterName;
-//   blasterInfo.src = blasters[currentBlasterIndex].images["descr"];
-// }
-
-// Function to update blaster info in specific page
-function updateBlasterData(pageLabel) {
-  let currentImgLabel;
-  switch (pageLabel) {
-    case "select": {
-      currentImgLabel = `#game-intro .carousel-image`;
-      break;
-    }
-    case "info": {
-      currentImgLabel = `#info-page .carousel-image`;
-      break;
-    }
-  }
-  const currentImg = document.querySelector(currentImgLabel);
-  const currentName = document.getElementById(`blaster-name-${pageLabel}`);
-  currentImg.src = blasters[currentBlasterIndex].images[`${pageLabel}`];
-  currentName.textContent = blasters[currentBlasterIndex].blasterName;
-  blasterInfo.src = blasters[currentBlasterIndex].images["descr"];
-  // if (pageLabel === "select") {
-  //   const currentImg = document.querySelector(`#game-intro .carousel-image`);
-  //   const currentName = document.getElementById("blaster-name-select");
-  //   currentImg.src = blasters[currentBlasterIndex].images.select;
-  //   currentName.textContent = blasters[currentBlasterIndex].blasterName;
-  // } else if (pageLabel === "info") {
-  //   const currentImg = document.querySelector(`#info-page .carousel-image`);
-  //   const currentName = document.getElementById("blaster-name-info");
-  //   currentImg.src = blasters[currentBlasterIndex].images.info;
-  //   currentName.textContent = blasters[currentBlasterIndex].blasterName;
-  //   blasterInfo.src = blasters[currentBlasterIndex].images.descr;
-  // }
+function updateBlasterData() {
+  blasterNameSelect.textContent = blasters[currentBlasterIndex].blasterName;
 }
 
 // Function to initialize Swiper.js instances
-function initializeSwipers() {
-  // Swiper for Game Intro Page
-  // const swiperIntro = new Swiper("#game-intro .carousel-select-swipe", {
-  const swiperIntro = new Swiper("#game-intro .swiper", {
-    slidesPerView: 1,
-    loop: true,
-    navigation: {
-      nextEl: "#game-intro .carousel-next",
-      prevEl: "#game-intro .carousel-prev",
-    },
-  });
-
-  swiperIntro.on("slideChange", () => {
-    currentBlasterIndex = swiperIntro.realIndex;
-    updateBlasterData("select");
-  });
-
-  // Swiper for View Range Page
-  // const swiperInfo = new Swiper("#info-page .carousel-info-swipe", {
-  const swiperInfo = new Swiper("#info-page .swiper", {
-    slidesPerView: 1,
-    loop: true,
-    navigation: {
-      nextEl: "#info-page .carousel-next",
-      prevEl: "#info-page .carousel-prev",
-    },
-  });
-
-  swiperInfo.on("slideChange", () => {
-    currentBlasterIndex = swiperInfo.realIndex;
-    updateBlasterData("info");
+function initializeSwipers(pageLabel) {
+  switch (pageLabel) {
+    case "select": {
+      // Swiper for Game Intro Page
+      // const swiperIntro = new Swiper("#game-intro .swiper", {
+      swiper = new Swiper("#game-intro .swiper", {
+        slidesPerView: 1,
+        loop: true,
+        navigation: {
+          nextEl: "#sw-next",
+          prevEl: "#sw-prev",
+        },
+      });
+      break;
+    }
+    case "info": {
+      // Swiper for View Range Page
+      // const swiperInfo = new Swiper("#info-page .swiper", {
+      swiper = new Swiper("#info-page .swiper", {
+        slidesPerView: 1,
+        loop: true,
+        navigation: {
+          nextEl: "sw-next-i",
+          prevEl: "sw-prev-i",
+        },
+      });
+      break;
+    }
+  }
+  swiper.slideTo(currentBlasterIndex);
+  swiper.on("slideChange", () => {
+    currentBlasterIndex = swiper.realIndex;
+    updateBlasterData();
   });
 }
-
-// Function to handle swipe
-// function handleSwipe(pageLabel) {
-//   const swipeThreshold = POSITIVE_THRESHOLD;
-//   if (touchEndX < touchStartX - swipeThreshold) {
-//     // Swipe left
-//     currentBlasterIndex = (currentBlasterIndex + 1) % blasters.length;
-//     currentPageLabel = pageLabel;
-//     updateBlasterData();
-//   } else if (touchEndX > touchStartX + swipeThreshold) {
-//     // Swipe right
-//     currentBlasterIndex =
-//       (currentBlasterIndex - 1 + blasters.length) % blasters.length;
-//     currentPageLabel = pageLabel;
-//     updateBlasterData();
-//   }
-// }
-
-// // Function for swipe handling with mouse
-// // element - where to listen, pageLabel - current page label
-// function addSwipeListeners(element, pageLabel) {
-//   element.addEventListener("touchstart", (e) => {
-//     touchStartX = e.changedTouches[0].clientX;
-//   });
-//   element.addEventListener("touchend", (e) => {
-//     touchEndX = e.changedTouches[0].clientX;
-//     handleSwipe(pageLabel);
-//   });
-
-//   // Mouse drag support
-//   let isDragging = false;
-//   let startX = 0;
-
-//   element.addEventListener("mousedown", (e) => {
-//     isDragging = true;
-//     startX = e.clientX;
-//   });
-
-//   element.addEventListener("mousemove", (e) => {
-//     if (!isDragging) return;
-//     const deltaX = e.clientX - startX;
-//     if (deltaX > POSITIVE_THRESHOLD || deltaX < NEGATIVE_THRESHOLD) {
-//       touchStartX = startX;
-//       touchEndX = e.clientX;
-//       handleSwipe(pageLabel);
-//       isDragging = false; // End the drag after a successful swipe
-//     }
-//   });
-
-//   element.addEventListener("mouseup", () => {
-//     isDragging = false;
-//   });
-
-//   element.addEventListener("mouseleave", () => {
-//     isDragging = false;
-//   });
-// }
 
 // Navigation between pages
 btnStartPagePlayM.addEventListener("click", () => {
   togglePageVisibility(gameIntroSection);
-  // currentPageLabel = "select";
-  updateBlasterData("select");
-  console.log(currentBlasterIndex);
+  updateBlasterData();
+  initializeSwipers("select");
 });
 
 btnStartPageWatch.addEventListener("click", openModalVideo);
@@ -297,6 +173,7 @@ closeVideo.addEventListener("click", closeModalVideo);
 btnGoBack.forEach((button) => {
   button.addEventListener("click", () => {
     togglePageVisibility(startPageSection);
+    swiper.destroy();
     promoWatch.pause();
     promoEnd.pause();
   });
@@ -304,13 +181,13 @@ btnGoBack.forEach((button) => {
 
 btnStartPageViewR.addEventListener("click", () => {
   togglePageVisibility(viewRangeSection);
-  // currentPageLabel = "info";
-  updateBlasterData("info");
-  console.log(currentBlasterIndex);
+  updateBlasterData();
+  initializeSwipers("info");
 });
 
 btnPlayGame.addEventListener("click", () => {
   togglePageVisibility(mainGameSection);
+  swiper.destroy();
   startGame();
 });
 
@@ -336,62 +213,17 @@ function closeModalVideo() {
   promoWatch.pause();
 }
 
-// Event listeners for carousel
-// Previous Blaster
-// btnCarouselPrev.forEach((button) => {
-//   button.addEventListener("click", () => {
-//     currentBlasterIndex =
-//       (currentBlasterIndex - 1 + blasters.length) % blasters.length;
-//     updateBlasterData();
-//   });
+// Fix to non-working clicks on swiper buttons on View Range Page
+// btnPrev.addEventListener("click", () => {
+//   currentBlasterIndex =
+//     (currentBlasterIndex - 1 + blasters.length) % blasters.length;
+//   swiper.slideTo(currentBlasterIndex);
 // });
 
-// // Next Blaster
-// btnCarouselNext.forEach((button) => {
-//   button.addEventListener("click", () => {
-//     currentBlasterIndex = (currentBlasterIndex + 1) % blasters.length;
-//     updateBlasterData();
-//   });
+// btnNext.addEventListener("click", () => {
+//   currentBlasterIndex = (currentBlasterIndex + 1) % blasters.length;
+//   swiper.slideTo(currentBlasterIndex);
 // });
-
-// // Swipe handling for Game Intro Page ("carousel-select")
-// carouselSelectSwipe.addEventListener("touchstart", (e) => {
-//   touchStartX = e.changedTouches[0].clientX;
-// });
-// carouselSelectSwipe.addEventListener("touchend", (e) => {
-//   touchEndX = e.changedTouches[0].clientX;
-//   handleSwipe("select");
-// });
-
-// // Swipe handling for View Range Page ("carousel-info")
-// carouselInfoSwipe.addEventListener("touchstart", (e) => {
-//   touchStartX = e.changedTouches[0].clientX;
-// });
-// carouselInfoSwipe.addEventListener("touchend", (e) => {
-//   touchEndX = e.changedTouches[0].clientX;
-//   handleSwipe("info");
-// });
-
-// addSwipeListeners(carouselSelectSwipe, "select");
-// addSwipeListeners(carouselInfoSwipe, "info");
-
-// Adding event listeners
-// if (btnStartPagePlayM) {
-//   btnStartPagePlayM.addEventListener("click", () =>
-//     handleButtonClick(btnStartPagePlayM)
-//   );
-// }
-// if (btnStartPageWatch) {
-//   btnStartPageWatch.addEventListener("click", () =>
-//     handleButtonClick(btnStartPageWatch)
-//   );
-// }
-
-// if (btnVisit) {
-//   btnVisit.forEach((button) => {
-//     button.addEventListener("click", () => handleButtonClick(button));
-//   });
-// }
 
 // Game logic variables
 const canvas = document.createElement("canvas");
@@ -449,9 +281,7 @@ function startGame() {
   startTime = null;
   lastTargetTime = 0;
   targetPosition = null;
-  rapidity = 500; // in ms
-  reloadTime = 3000; // in ms
-  magazin = 6;
+  ({ rapidity, reloadTime, magazin } = blasters[currentBlasterIndex]);
   shotsNumber = 0;
   lastShotTime = 0;
   isHit = false;
@@ -603,7 +433,8 @@ canvas.addEventListener("click", (event) => {
   const clickX = event.clientX - rect.left;
   const clickY = event.clientY - rect.top;
 
-  console.log(`Click ${clickX}, ${clickY}`);
+  // Shot coordinates
+  // console.log(`Click ${clickX}, ${clickY}`);
 
   if (targetPosition) {
     const dist = Math.sqrt(
