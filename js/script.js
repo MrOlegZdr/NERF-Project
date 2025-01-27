@@ -32,15 +32,14 @@ const soundMiss = document.getElementById("sound-miss");
 // Selecting elements for Finish Game Page
 const finishGameSection = document.getElementById("finish-game");
 const finalScore = document.getElementById("final-score-val");
+const finalBlasterImg = document.querySelector(".final-result img");
 const promoEnd = document.getElementById("promo-end");
 
 // Selecting common elements
 const btnVisit = document.querySelectorAll(".visit-nerf");
 const btnGoBack = document.querySelectorAll(".go-back");
 const promoVideo = document.querySelectorAll(".video-element");
-
-const btnPrev = document.getElementById("sw-prev-i");
-const btnNext = document.getElementById("sw-next-i");
+const swiperPage = document.getElementById("swiper-page");
 
 // Constants
 // Blaster objects
@@ -104,7 +103,7 @@ const handleButtonClick = (button) => {
 
 // Function to toggle current page visibility:
 // add hidden to all pages, which are not visiblePage
-function togglePageVisibility(visiblePage) {
+function togglePageVisibility(visiblePage, isSwiperHidden = true) {
   [
     startPageSection,
     gameIntroSection,
@@ -113,9 +112,11 @@ function togglePageVisibility(visiblePage) {
     finishGameSection,
     overlay,
     modalVideo,
+    swiperPage,
   ].forEach((section) => {
     section.classList.toggle("hidden", section !== visiblePage);
   });
+  swiperPage.classList.toggle("hidden", isSwiperHidden);
 }
 
 // Function to update blaster info in specific page
@@ -125,34 +126,23 @@ function updateBlasterData() {
 
 // Function to initialize Swiper.js instances
 function initializeSwipers(pageLabel) {
-  switch (pageLabel) {
-    case "select": {
-      // Swiper for Game Intro Page
-      // const swiperIntro = new Swiper("#game-intro .swiper", {
-      swiper = new Swiper("#game-intro .swiper", {
-        slidesPerView: 1,
-        loop: true,
-        navigation: {
-          nextEl: "#sw-next",
-          prevEl: "#sw-prev",
-        },
-      });
-      break;
+  swiper = new Swiper("#swiper-page .swiper", {
+    slidesPerView: 1,
+    loop: true,
+    navigation: {
+      nextEl: "#sw-next",
+      prevEl: "#sw-prev",
+    },
+  });
+
+  const slides = document.querySelectorAll(".swiper-slide img");
+
+  slides.forEach((img, index) => {
+    if (blasters[index].images[`${pageLabel}`]) {
+      img.src = blasters[index].images[`${pageLabel}`];
     }
-    case "info": {
-      // Swiper for View Range Page
-      // const swiperInfo = new Swiper("#info-page .swiper", {
-      swiper = new Swiper("#info-page .swiper", {
-        slidesPerView: 1,
-        loop: true,
-        navigation: {
-          nextEl: "sw-next-i",
-          prevEl: "sw-prev-i",
-        },
-      });
-      break;
-    }
-  }
+  });
+
   swiper.slideTo(currentBlasterIndex);
   swiper.on("slideChange", () => {
     currentBlasterIndex = swiper.realIndex;
@@ -162,7 +152,7 @@ function initializeSwipers(pageLabel) {
 
 // Navigation between pages
 btnStartPagePlayM.addEventListener("click", () => {
-  togglePageVisibility(gameIntroSection);
+  togglePageVisibility(gameIntroSection, false);
   updateBlasterData();
   initializeSwipers("select");
 });
@@ -180,7 +170,7 @@ btnGoBack.forEach((button) => {
 });
 
 btnStartPageViewR.addEventListener("click", () => {
-  togglePageVisibility(viewRangeSection);
+  togglePageVisibility(viewRangeSection, false);
   updateBlasterData();
   initializeSwipers("info");
 });
@@ -212,18 +202,6 @@ function closeModalVideo() {
   overlay.classList.add("hidden");
   promoWatch.pause();
 }
-
-// Fix to non-working clicks on swiper buttons on View Range Page
-// btnPrev.addEventListener("click", () => {
-//   currentBlasterIndex =
-//     (currentBlasterIndex - 1 + blasters.length) % blasters.length;
-//   swiper.slideTo(currentBlasterIndex);
-// });
-
-// btnNext.addEventListener("click", () => {
-//   currentBlasterIndex = (currentBlasterIndex + 1) % blasters.length;
-//   swiper.slideTo(currentBlasterIndex);
-// });
 
 // Game logic variables
 const canvas = document.createElement("canvas");
@@ -402,6 +380,7 @@ function endGame() {
   togglePageVisibility(finishGameSection);
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   finalScore.textContent = score;
+  finalBlasterImg.src = blasters[currentBlasterIndex].images["select"];
   promoEnd.currentTime = 0;
   promoEnd.play();
 }

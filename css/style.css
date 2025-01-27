@@ -65,6 +65,17 @@ body {
   justify-content: flex-end;
 }
 
+.swiper-page {
+  width: 800px;
+  height: 50%;
+  position: absolute;
+  background: transparent;
+  z-index: 0;
+  display: flex;
+  justify-items: auto;
+  align-items: center;
+}
+
 #start-page,
 #game-page,
 #finish-game {
@@ -165,7 +176,7 @@ body {
 
 .btn,
 .btn-carousel {
-  z-index: 2000;
+  z-index: 5000;
   font-size: 1.8rem;
   font-style: italic;
   font-family: "Eurostile";
@@ -288,11 +299,7 @@ body {
 }
 
 .swiper {
-  width: 92%;
-  height: 50%;
-  margin-bottom: 4%;
-  margin-left: 4%;
-  margin-right: 4%;
+  width: 98%;
   z-index: 1000;
 }
 
