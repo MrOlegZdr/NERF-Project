@@ -13,14 +13,11 @@
 
 @media (max-width: 800px) {
   .page {
-    width: 100%;
-    height: 100%;
+    width: 800px;
+    height: 450px;
   }
   .btn {
     font-size: 1.2rem;
-  }
-  .game-info {
-    width: 30%;
   }
 }
 
@@ -42,6 +39,7 @@ body {
   font-family: "Eurostile";
   font-size: 0.8rem;
   font-weight: 100;
+  width: 100vw;
   height: 100vh;
   color: white;
   background-color: rgba(15, 10, 10, 0.8);
@@ -52,8 +50,10 @@ body {
 
 /* LAYOUT */
 .page {
-  width: 800px;
-  height: 450px;
+  width: 100vw;
+  height: 100vh;
+  max-width: 800px;
+  max-height: 450px;
   position: relative;
   background-size: cover;
   background-repeat: no-repeat;
@@ -66,8 +66,10 @@ body {
 }
 
 .swiper-page {
-  width: 800px;
+  width: 100%;
   height: 50%;
+  max-width: 800px;
+  max-height: 225px;
   position: absolute;
   background: transparent;
   z-index: 0;
@@ -233,7 +235,8 @@ body {
 }
 
 .img-full {
-  width: 100%;
+  height: 100%;
+  align-self: center;
 }
 
 .img-off-sc-l {
@@ -250,7 +253,7 @@ body {
 
 .img-cntr {
   position: relative;
-  width: 100%;
+  width: 70%;
 }
 
 .swiper-button-prev.btn-carousel,
@@ -332,7 +335,7 @@ body {
 
 .video-element {
   width: 100%;
-  height: auto;
+  height: 100%;
   object-fit: cover;
   cursor: pointer;
 }
@@ -342,7 +345,7 @@ body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 80%;
+  width: 70vw;
   z-index: 3500;
 }
 
@@ -351,7 +354,7 @@ body {
   top: 20%;
   left: 3%;
   width: 32%;
-  height: 57%;
+  height: 57vh;
   user-select: none;
 }
 
