@@ -1,6 +1,14 @@
 @font-face {
-  font-family: "Eurostile", sans-serif;
-  src: url("fonts/EurostileOblique.ttf") format("truetype");
+  font-family: "Eurostile";
+  src: url("fonts/Eurostile-Oblique.eot");
+  src: url("fonts/Eurostile-Oblique.eot?#iefix") format("embedded-opentype"),
+    url("fonts/Eurostile-Oblique.woff2") format("woff2"),
+    url("fonts/Eurostile-Oblique.woff") format("woff"),
+    url("fonts/Eurostile-Oblique.ttf") format("truetype"),
+    url("fonts/Eurostile-Oblique.svg#Eurostile-Oblique") format("svg");
+  font-weight: normal;
+  font-style: italic;
+  font-display: swap;
 }
 
 @media (max-width: 800px) {
