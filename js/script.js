@@ -24,10 +24,6 @@ const viewRangeSection = document.getElementById("info-page");
 
 // Selecting elements for Main Game Page
 const mainGameSection = document.getElementById("game-page");
-const soundShot = document.getElementById("sound-shot");
-const soundReload = document.getElementById("sound-reload");
-const soundHit = document.getElementById("sound-hit");
-const soundMiss = document.getElementById("sound-miss");
 
 // Selecting elements for Finish Game Page
 const finishGameSection = document.getElementById("finish-game");
@@ -43,48 +39,51 @@ const swiperPage = document.getElementById("swiper-page");
 
 // Constants
 // Blaster objects
-const blasters = [
+const BLASTERS = [
   {
-    blasterName: "Volt SD-1",
+    blasterName: "Elite 2.0 Volt SD-1",
     images: {
-      select: "textures/Blasters/Blaster-1-select-Volt.png",
-      info: "textures/Blasters/Blaster-1-info-Volt.png",
+      select: "textures/Blasters/Blaster-1-select-Volt.gif",
+      info: "textures/Blasters/Blaster-1-info-Volt.gif",
     },
     rapidity: 1000, // in ms
-    reloadTime: 1000, // in ms
+    reloadTime: 500, // in ms
     magazin: 1,
   },
   {
-    blasterName: "Commander",
+    blasterName: "Elite 2.0 Commander",
     images: {
-      select: "textures/Blasters/Blaster-2-select-Commander.png",
-      info: "textures/Blasters/Blaster-2-info-Commander.png",
+      select: "textures/Blasters/Blaster-2-select-Commander.gif",
+      info: "textures/Blasters/Blaster-2-info-Commander.gif",
     },
     rapidity: 500, // in ms
     reloadTime: 3000, // in ms
     magazin: 6,
   },
   {
-    blasterName: "Shockwave",
+    blasterName: "Elite 2.0 Shockwave",
     images: {
-      select: "textures/Blasters/Blaster-3-select-Shockwave.png",
-      info: "textures/Blasters/Blaster-3-info-Shockwave.png",
+      select: "textures/Blasters/Blaster-3-select-Shockwave.gif",
+      info: "textures/Blasters/Blaster-3-info-Shockwave.gif",
     },
     rapidity: 500, // in ms
     reloadTime: 7500, // in ms
     magazin: 15,
   },
   {
-    blasterName: "Echo",
+    blasterName: "Elite 2.0 Echo",
     images: {
-      select: "textures/Blasters/Blaster-4-select-Echo.png",
-      info: "textures/Blasters/Blaster-4-info-Echo.png",
+      select: "textures/Blasters/Blaster-4-select-Echo.gif",
+      info: "textures/Blasters/Blaster-4-info-Echo.gif",
     },
     rapidity: 500, // in ms
-    reloadTime: 5500, // in ms
+    reloadTime: 5000, // in ms
     magazin: 10,
   },
 ];
+const BLACK = "#06142a";
+const ORANG = "#f47921";
+const AQMRN = "#09d1e1";
 
 let swiper, currentBlasterIndex;
 init();
@@ -92,7 +91,7 @@ init();
 // Function to set initial values
 function init() {
   currentBlasterIndex = 0;
-  blasterNameSelect.textContent = blasters[0].blasterName;
+  blasterNameSelect.textContent = BLASTERS[0].blasterName;
   togglePageVisibility(startPageSection);
 }
 
@@ -121,7 +120,7 @@ function togglePageVisibility(visiblePage, isSwiperHidden = true) {
 
 // Function to update blaster info in specific page
 function updateBlasterData() {
-  blasterNameSelect.textContent = blasters[currentBlasterIndex].blasterName;
+  blasterNameSelect.textContent = BLASTERS[currentBlasterIndex].blasterName;
 }
 
 // Function to initialize Swiper.js instances
@@ -138,8 +137,8 @@ function initializeSwipers(pageLabel) {
   const slides = document.querySelectorAll(".swiper-slide img");
 
   slides.forEach((img, index) => {
-    if (blasters[index].images[`${pageLabel}`]) {
-      img.src = blasters[index].images[`${pageLabel}`];
+    if (BLASTERS[index].images[`${pageLabel}`]) {
+      img.src = BLASTERS[index].images[`${pageLabel}`];
     }
   });
 
@@ -206,9 +205,15 @@ function closeModalVideo() {
 // Game logic variables
 const canvas = document.createElement("canvas");
 const ctx = canvas.getContext("2d");
-const gameDuration = 20; // 20 seconds
-
-const targets = [
+const activeSounds = new Set();
+const GAME_TIME = 20000; // 20 seconds
+const SPAWN_INTERVAL = 1000; // 1 second
+const SCORE_DELAY_VIS = 1000; // 1 second
+const EXPLOSION_DURATION = 500;
+const RELOAD_BULLET = 500;
+const SECTOR_COUNT = 7;
+const GAP = 15;
+const TARGETS = [
   {
     worth: 10,
     radius: 44,
@@ -233,117 +238,139 @@ const targets = [
 
 let currentAnim,
   score,
-  countdown,
   startTime,
   isReloading,
-  lastTargetTime,
-  targetPosition,
   rapidity,
-  reloadTime,
+  // reloadTime,
   magazin,
-  shotsNumber,
   lastShotTime,
-  isHit;
+  targets,
+  explosions,
+  scoreAnimations,
+  lastSpawnTime,
+  gameOver,
+  isPaused,
+  pausedAt,
+  totalPausedTime;
 
 // Append canvas to the game page
 canvas.width = startPageSection.clientWidth;
 canvas.height = startPageSection.clientHeight;
 mainGameSection.appendChild(canvas);
-const shift = canvas.height * 0.17; // Shift from the top of the page with logo
+const SHIFT = canvas.height * 0.17; // Shift from the top of the page with logo
 
 // Function to start the game
 function startGame() {
   score = 0;
-  countdown = gameDuration;
   isReloading = false;
+  targets = [];
+  explosions = [];
+  scoreAnimations = [];
   startTime = null;
-  lastTargetTime = 0;
-  targetPosition = null;
-  ({ rapidity, reloadTime, magazin } = blasters[currentBlasterIndex]);
-  shotsNumber = 0;
+  lastSpawnTime = 0;
+  gameOver = false;
+  isPaused = false;
+  // ({ rapidity, reloadTime, magazin } = BLASTERS[currentBlasterIndex]);
+  ({ rapidity, magazin } = BLASTERS[currentBlasterIndex]);
   lastShotTime = 0;
-  isHit = false;
+  pausedAt = 0;
+  totalPausedTime = 0;
   currentAnim = requestAnimationFrame(animateGame);
 }
 
-function animateGame() {
-  const currentTime = performance.now();
-  if (!startTime) {
-    startTime = currentTime;
-  }
-  const elapsedTime = (currentTime - startTime) / 1000;
-
-  // Update timer
-  countdown = Math.max(0, gameDuration - elapsedTime);
-  if (lastTargetTime === 0 || elapsedTime - lastTargetTime >= 1 || isHit) {
-    isHit = false;
-    lastTargetTime = elapsedTime;
-    drawTarget();
+function animateGame(timestamp) {
+  if (gameOver) return;
+  if (isPaused) {
+    requestAnimationFrame(animateGame);
+    return;
   }
 
-  // Draw timer and score
-  drawText(
-    `TIME: ${countdown.toFixed(1)} SEC`,
-    canvas.clientWidth * 0.77,
-    canvas.clientHeight * 0.11,
-    "15px Eurostile",
-    "#09d1e1"
-  );
+  if (!startTime) startTime = timestamp;
+  const elapsedTime = timestamp - startTime - totalPausedTime;
 
-  drawText(
-    `SCORE: ${score}`,
-    canvas.clientWidth * 0.77,
-    canvas.clientHeight * 0.17,
-    "24px Eurostile",
-    "#09d1e1"
-  );
-
-  drawText(
-    `MAGAZIN: ${isReloading ? "..." : magazin - shotsNumber}`,
-    canvas.clientWidth * 0.77,
-    canvas.clientHeight * 0.07,
-    "15px Eurostile",
-    "#09d1e1"
-  );
-
-  if (countdown > 0) {
-    // Continue the loop
-    currentAnim = requestAnimationFrame(animateGame);
-  } else {
+  if (elapsedTime > GAME_TIME) {
     endGame();
     return;
   }
+
+  ctx.clearRect(0, SHIFT, canvas.width, canvas.height - SHIFT);
+  if (timestamp - lastSpawnTime >= SPAWN_INTERVAL) {
+    spawnTarget();
+    lastSpawnTime = timestamp;
+  }
+
+  targets.forEach((target) => {
+    target.opacity = Math.min(target.opacity + 0.02, 1);
+    drawTarget(target);
+  });
+
+  drawExplosions(timestamp);
+
+  scoreAnimations = scoreAnimations.filter(
+    (anim) => timestamp - anim.time < SCORE_DELAY_VIS
+  );
+  scoreAnimations.forEach((anim) => {
+    ctx.globalAlpha = anim.opacity;
+    ctx.shadowColor = AQMRN;
+    ctx.shadowBlur = 10;
+    drawText(
+      `+${anim.worth}`,
+      anim.x,
+      anim.y,
+      "bold 20px Eurostile",
+      "white",
+      false
+    );
+    anim.opacity -= 0.02;
+    ctx.globalAlpha = 1;
+    ctx.shadowBlur = 0;
+  });
+
+  drawGameInfo();
+
+  requestAnimationFrame(animateGame);
 }
 
-// Function to create and draw a target
-function drawTarget() {
-  const target = targets[randomFromToIncl(0, 3)];
-  const radius = target.radius;
-  ctx.clearRect(0, shift, canvas.width, canvas.height - shift);
-  const x = randomFromToIncl(radius, canvas.width - radius);
-  const y = randomFromToIncl(shift + radius, canvas.height - radius);
-  ctx.fillStyle = "#06142a";
-  ctx.strokeStyle = "#f47921";
-  ctx.lineWidth = 4;
+function spawnTarget() {
+  if (gameOver) return;
+  const targetType = TARGETS[randomFromToIncl(0, 3)];
+  const x = randomFromToIncl(
+    targetType.radius + GAP,
+    canvas.width - targetType.radius - GAP
+  );
+  const y = randomFromToIncl(
+    SHIFT + targetType.radius + GAP,
+    canvas.height - targetType.radius - GAP
+  );
+  targets.push({ x, y, ...targetType, opacity: 0 });
+}
+
+// Function to draw a target
+function drawTarget(target) {
+  ctx.globalAlpha = target.opacity;
+  ctx.fillStyle = BLACK;
   ctx.beginPath();
-  ctx.arc(x, y, radius, 0, Math.PI * 2);
+  ctx.arc(target.x, target.y, target.radius, 0, Math.PI * 2);
   ctx.fill();
+  ctx.lineWidth = 4;
+  ctx.strokeStyle = ORANG;
   ctx.stroke();
-  ctx.beginPath();
-  ctx.arc(x, y, target.innerRadius, 0, Math.PI * 2);
-  ctx.stroke();
+  if (target.innerRadius > 0) {
+    ctx.beginPath();
+    ctx.arc(target.x, target.y, target.innerRadius, 0, Math.PI * 2);
+    ctx.stroke();
+  }
   drawText(
     target.worth,
-    x - 2,
-    y,
+    target.x - 2,
+    target.y,
     "16px Eurostile",
     "white",
     "center",
     "middle",
     false
   );
-
-  targetPosition = { x, y, radius, worth: target.worth };
+  ctx.globalAlpha = 1;
 }
 
 // Function to draw text on canvas
@@ -361,7 +388,6 @@ function drawText(
   ctx.fillStyle = color;
   ctx.textAlign = align;
   ctx.textBaseline = baseline;
-
   const clearWidth = ctx.measureText(text).width * 1.2;
   const clearHeight = parseInt(font);
 
@@ -375,87 +401,250 @@ function randomFromToIncl(from, to) {
   return Math.floor(Math.random() * (to - from + 1) + from);
 }
 
+// Event listener for mouse clicks or taps
+canvas.addEventListener("click", (event) => {
+  if (gameOver) return;
+  if (isReloading || performance.now() - lastShotTime < rapidity) return;
+  lastShotTime = performance.now();
+  magazin--;
+  playSound("sounds/One-shot.mp3");
+  recoilEffect();
+
+  let hit = false;
+  targets.forEach((target, index) => {
+    const dx = event.offsetX - target.x;
+    const dy = event.offsetY - target.y;
+    if (Math.sqrt(dx * dx + dy * dy) < target.radius) {
+      hit = true;
+      playSound("sounds/Hit.mp3");
+      score += target.worth;
+      targets.splice(index, 1);
+      createExplosion(target);
+      scoreAnimations.push({
+        x: target.x,
+        y: target.y,
+        worth: target.worth,
+        opacity: 1,
+        time: performance.now(),
+      });
+    }
+  });
+
+  if (!hit) {
+    playSound("sounds/Miss.mp3");
+    shakeScreen();
+  }
+
+  if (magazin === 0) reload();
+});
+
+function reload() {
+  isReloading = true;
+  mainGameSection.style.cursor = "wait";
+  let bulletsLoaded = 0;
+  let reloadStart = performance.now();
+
+  function reloadStep() {
+    if (gameOver) {
+      isReloading = false;
+      stopAllSounds();
+      return;
+    }
+    if (bulletsLoaded < BLASTERS[currentBlasterIndex].magazin) {
+      if (
+        performance.now() - reloadStart >=
+        RELOAD_BULLET * (bulletsLoaded + 1)
+      ) {
+        playSound("sounds/Reload-one-bullet.mp3");
+        bulletsLoaded++;
+      }
+      requestAnimationFrame(reloadStep);
+    } else {
+      magazin = BLASTERS[currentBlasterIndex].magazin;
+      mainGameSection.style.cursor = 'url("textures/aim.cur"), crosshair';
+      isReloading = false;
+    }
+  }
+  reloadStep();
+}
+
+function playSound(file) {
+  const audio = new Audio(file);
+  activeSounds.add(audio);
+  audio.play();
+  audio.onended = () => {
+    activeSounds.delete(audio);
+  };
+}
+
+function stopAllSounds() {
+  activeSounds.forEach((audio) => {
+    audio.pause();
+    audio.currentTime = 0;
+  });
+  activeSounds.clear();
+}
+
+function shakeScreen() {
+  canvas.style.transform = "translateX(5px)";
+  setTimeout(() => (canvas.style.transform = "translateX(-5px)"), 50);
+  setTimeout(() => (canvas.style.transform = "translateX(0)"), 100);
+}
+
+function recoilEffect() {
+  canvas.style.transform = "scale(0.98)";
+  setTimeout(() => (canvas.style.transform = "scale(1)"), 100);
+}
+
+function createExplosion(target) {
+  let explosion = {
+    x: target.x,
+    y: target.y,
+    radius: target.radius,
+    innerRadius: target.innerRadius,
+    time: performance.now(),
+    sectors: [],
+  };
+
+  for (let i = 0; i < SECTOR_COUNT; i++) {
+    let angleStart = (i * 2 * Math.PI) / SECTOR_COUNT;
+    let angleEnd = ((i + 1) * 2 * Math.PI) / SECTOR_COUNT;
+    let angleMid = (angleStart + angleEnd) / 2;
+
+    let sector = {
+      angleStart,
+      angleEnd,
+      dx: Math.cos(angleMid) * GAP,
+      dy: Math.sin(angleMid) * GAP,
+    };
+
+    explosion.sectors.push(sector);
+  }
+  explosions.push(explosion);
+}
+
+function drawExplosions(timestamp) {
+  explosions = explosions.filter(
+    (exp) => timestamp - exp.time < EXPLOSION_DURATION
+  );
+
+  explosions.forEach((exp) => {
+    let progress = (timestamp - exp.time) / EXPLOSION_DURATION;
+    let easeOut = 1 - Math.pow(1 - progress, 3); // Fade in the end
+
+    drawExplosionSectorsPizza(exp, easeOut);
+  });
+}
+
+function drawExplosionSectorsPizza(explosion, progress) {
+  explosion.sectors.forEach((sector) => {
+    let offsetX = sector.dx * progress;
+    let offsetY = sector.dy * progress;
+
+    ctx.fillStyle = BLACK;
+    ctx.beginPath();
+    ctx.moveTo(explosion.x + offsetX, explosion.y + offsetY);
+    ctx.arc(
+      explosion.x + offsetX,
+      explosion.y + offsetY,
+      explosion.radius,
+      sector.angleStart,
+      sector.angleEnd
+    );
+    ctx.lineTo(explosion.x + offsetX, explosion.y + offsetY);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.strokeStyle = ORANG;
+    ctx.beginPath();
+    ctx.arc(
+      explosion.x + offsetX,
+      explosion.y + offsetY,
+      explosion.radius,
+      sector.angleStart,
+      sector.angleEnd
+    );
+    ctx.stroke();
+
+    if (explosion.innerRadius > 0) {
+      ctx.beginPath();
+      ctx.arc(
+        explosion.x + offsetX,
+        explosion.y + offsetY,
+        explosion.innerRadius,
+        sector.angleStart,
+        sector.angleEnd
+      );
+      ctx.stroke();
+    }
+  });
+}
+
+function drawGameInfo() {
+  drawText(
+    `MAGAZIN: ${isReloading ? "..." : magazin}`,
+    canvas.clientWidth * 0.77,
+    canvas.clientHeight * 0.07,
+    "15px Eurostile",
+    "#09d1e1"
+  );
+
+  const remainingTime = Math.max(
+    (GAME_TIME - (performance.now() - startTime - totalPausedTime)) / 1000,
+    0
+  );
+
+  drawText(
+    `TIME: ${remainingTime.toFixed(1)} SEC`,
+    canvas.clientWidth * 0.77,
+    canvas.clientHeight * 0.11,
+    "15px Eurostile",
+    "#09d1e1"
+  );
+
+  drawText(
+    `SCORE: ${score}`,
+    canvas.clientWidth * 0.77,
+    canvas.clientHeight * 0.17,
+    "24px Eurostile",
+    "#09d1e1"
+  );
+}
+
 // Function to end the game
 function endGame() {
-  togglePageVisibility(finishGameSection);
+  gameOver = true;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  stopAllSounds();
+  togglePageVisibility(finishGameSection);
   finalScore.textContent = score;
-  finalBlasterImg.src = blasters[currentBlasterIndex].images["select"];
+  finalBlasterImg.src = BLASTERS[currentBlasterIndex].images["select"];
   promoEnd.currentTime = 0;
   promoEnd.play();
 }
 
-// Event listener for mouse clicks or taps
-canvas.addEventListener("click", (event) => {
-  const currentTime = performance.now();
-
-  // Prevent shooting if within rapidity timeframe
-  if (!isReloading && currentTime - lastShotTime < rapidity) {
-    // Just to check what event was
-    console.log("Shot delay");
-    return;
-  } else if (isReloading && currentTime - lastShotTime < reloadTime) {
-    // Just to check what event was
-    console.log("Reloading");
-    return;
-  }
-
-  lastShotTime = currentTime;
-  shotsNumber++;
-  isReloading = false;
-
-  soundShot.currentTime = 0;
-  soundShot.play();
-
-  // Get click position
-  const rect = canvas.getBoundingClientRect();
-  const clickX = event.clientX - rect.left;
-  const clickY = event.clientY - rect.top;
-
-  // Shot coordinates
-  // console.log(`Click ${clickX}, ${clickY}`);
-
-  if (targetPosition) {
-    const dist = Math.sqrt(
-      Math.pow(clickX - targetPosition.x, 2) +
-        Math.pow(clickY - targetPosition.y, 2)
-    );
-
-    // Check if the clisck is within the target
-    if (dist <= targetPosition.radius) {
-      score += targetPosition.worth;
-      targetPosition = null;
-      isHit = true;
-      soundHit.currentTime = 0;
-      soundHit.play();
-    } else {
-      soundMiss.currentTime = 0;
-      soundMiss.volume = 0.3;
-      soundMiss.play();
-    }
-  }
-
-  if (shotsNumber === magazin) {
-    shotsNumber = 0;
-    isReloading = true;
-    soundLoopReload(reloadTime);
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) {
+    pauseGame();
+  } else {
+    resumeGame();
   }
 });
 
-function soundLoopReload(reloadTime) {
-  const soundStartTime = performance.now();
-  soundReload.currentTime = 0;
-  soundReload.play();
-  soundReload.addEventListener("ended", function handleEnd() {
-    const soundEndTime = performance.now();
-    if (countdown > 0 && soundEndTime - soundStartTime < reloadTime) {
-      soundReload.currentTime = 0;
-      soundReload.play();
-    } else {
-      soundReload.removeEventListener("ended", handleEnd);
-      isReloading = false;
-    }
-  });
+function pauseGame() {
+  if (!gameOver && !isPaused) {
+    isPaused = true;
+    pausedAt = performance.now();
+  }
+}
+
+function resumeGame() {
+  if (!gameOver && isPaused) {
+    isPaused = false;
+    totalPausedTime += performance.now() - pausedAt;
+    lastSpawnTime = performance.now();
+    animateGame(performance.now());
+  }
 }
 
 promoVideo.forEach((video) => {
