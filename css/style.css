@@ -156,7 +156,7 @@ body {
 
 #game-page {
   background-image: url("../textures/Background/Background-game-page.jpg");
-  cursor: url("../textures/cursor.cur"), crosshair;
+  cursor: url("../textures/aim.cur"), crosshair;
 }
 
 #finish-game {
