@@ -45,40 +45,40 @@ const swiperPage = document.getElementById("swiper-page");
 // Blaster objects
 const blasters = [
   {
-    blasterName: "Volt SD-1",
+    blasterName: "Elite 2.0 Volt SD-1",
     images: {
-      select: "textures/Blasters/Blaster-1-select-Volt.png",
-      info: "textures/Blasters/Blaster-1-info-Volt.png",
+      select: "textures/Blasters/Blaster-1-select-Volt.gif",
+      info: "textures/Blasters/Blaster-1-info-Volt.gif",
     },
     rapidity: 1000, // in ms
     reloadTime: 1000, // in ms
     magazin: 1,
   },
   {
-    blasterName: "Commander",
+    blasterName: "Elite 2.0 Commander",
     images: {
-      select: "textures/Blasters/Blaster-2-select-Commander.png",
-      info: "textures/Blasters/Blaster-2-info-Commander.png",
+      select: "textures/Blasters/Blaster-2-select-Commander.gif",
+      info: "textures/Blasters/Blaster-2-info-Commander.gif",
     },
     rapidity: 500, // in ms
     reloadTime: 3000, // in ms
     magazin: 6,
   },
   {
-    blasterName: "Shockwave",
+    blasterName: "Elite 2.0 Shockwave",
     images: {
-      select: "textures/Blasters/Blaster-3-select-Shockwave.png",
-      info: "textures/Blasters/Blaster-3-info-Shockwave.png",
+      select: "textures/Blasters/Blaster-3-select-Shockwave.gif",
+      info: "textures/Blasters/Blaster-3-info-Shockwave.gif",
     },
     rapidity: 500, // in ms
     reloadTime: 7500, // in ms
     magazin: 15,
   },
   {
-    blasterName: "Echo",
+    blasterName: "Elite 2.0 Echo",
     images: {
-      select: "textures/Blasters/Blaster-4-select-Echo.png",
-      info: "textures/Blasters/Blaster-4-info-Echo.png",
+      select: "textures/Blasters/Blaster-4-select-Echo.gif",
+      info: "textures/Blasters/Blaster-4-info-Echo.gif",
     },
     rapidity: 500, // in ms
     reloadTime: 5500, // in ms
@@ -243,7 +243,8 @@ let currentAnim,
   magazin,
   shotsNumber,
   lastShotTime,
-  isHit;
+  isHit,
+  crackSize;
 
 // Append canvas to the game page
 canvas.width = startPageSection.clientWidth;
@@ -263,6 +264,7 @@ function startGame() {
   shotsNumber = 0;
   lastShotTime = 0;
   isHit = false;
+  crackSize = 10;
   currentAnim = requestAnimationFrame(animateGame);
 }
 
@@ -320,8 +322,14 @@ function drawTarget() {
   const target = targets[randomFromToIncl(0, 3)];
   const radius = target.radius;
   ctx.clearRect(0, shift, canvas.width, canvas.height - shift);
-  const x = randomFromToIncl(radius, canvas.width - radius);
-  const y = randomFromToIncl(shift + radius, canvas.height - radius);
+  const x = randomFromToIncl(
+    radius + crackSize,
+    canvas.width - radius - crackSize
+  );
+  const y = randomFromToIncl(
+    shift + radius + crackSize,
+    canvas.height - radius - crackSize
+  );
   ctx.fillStyle = "#06142a";
   ctx.strokeStyle = "#f47921";
   ctx.lineWidth = 4;
@@ -343,7 +351,13 @@ function drawTarget() {
     false
   );
 
-  targetPosition = { x, y, radius, worth: target.worth };
+  targetPosition = {
+    x,
+    y,
+    radius,
+    innerRadius: target.innerRadius,
+    worth: target.worth,
+  };
 }
 
 // Function to draw text on canvas
@@ -373,6 +387,35 @@ function drawText(
 
 function randomFromToIncl(from, to) {
   return Math.floor(Math.random() * (to - from + 1) + from);
+}
+
+function drawHit(targetPosition) {
+  ctx.clearRect(0, shift, canvas.width, canvas.height - shift);
+  const r = targetPosition.radius;
+  const iR = targetPosition.innerRadius;
+  let x, y;
+  const gap = crackSize / 2;
+  ctx.fillStyle = "#06142a";
+  ctx.strokeStyle = "#f47921";
+  for (let i = 0; i < 4; i++) {
+    if (i % 2 === 0) {
+      x = targetPosition.x + gap * (1 - i);
+      y = targetPosition.y;
+    } else {
+      x = targetPosition.x;
+      y = targetPosition.y + gap * (2 * i - 1);
+    }
+    const startAngel =
+      i === 0 ? Math.Pi * 1.75 : Math.Pi * (0.25 * (2 * i - 1));
+    const endAngel = Math.Pi * 0.25 * (2 * i + 1);
+    ctx.beginPath();
+    ctx.arc(x, y, r, startAngel, endAngel);
+    ctx.fill();
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(x, y, iR, startAngel, endAngel);
+    ctx.stroke();
+  }
 }
 
 // Function to end the game
@@ -424,10 +467,11 @@ canvas.addEventListener("click", (event) => {
     // Check if the clisck is within the target
     if (dist <= targetPosition.radius) {
       score += targetPosition.worth;
-      targetPosition = null;
       isHit = true;
       soundHit.currentTime = 0;
       soundHit.play();
+      drawHit(targetPosition);
+      targetPosition = null;
     } else {
       soundMiss.currentTime = 0;
       soundMiss.volume = 0.3;
